@@ -26,5 +26,7 @@ The web application would be hosted on integrated jetty server. The entire appli
 ##3rd Party API
 I have also exposed a API to be given to the hardward company identified by ``BuildingSvc`` and ``ElevatorSvc``.
 
-
+##Test Cases
+I have created a class to test the elevator simulation in ``SimulatorTest``. 
+Also to test REST API I have used the POSTMAN script checkin with the code.
 
