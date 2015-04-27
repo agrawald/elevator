@@ -4,25 +4,29 @@ import org.elevator.common.Constants;
 import org.elevator.common.FloorCall;
 
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by e7006722 on 27/04/2015.
  */
-public class CallPub{
+public class ElevatorPub {
+    private final Object MUTEX = new Object();
     private List<ElevatorSub> elevatorSubs = new ArrayList<ElevatorSub>();
     private Queue<FloorCall> pendingFloorCalls = new ArrayDeque<FloorCall>();
-    private final Object MUTEX = new Object();
 
-    public void register(ElevatorSub elevatorSub) {
-        elevatorSubs.add(elevatorSub);
+    public void register(ElevatorSub... elevatorSubs) {
+        for (ElevatorSub elevatorSub : elevatorSubs)
+            this.elevatorSubs.add(elevatorSub);
     }
 
     public void up(int floorNo) {
         if (floorNo > 0 && floorNo <= Constants.MAX_FLOORS) {
             FloorCall floorCall = new FloorCall(floorNo, true);
-            synchronized (MUTEX){
-                if(!pendingFloorCalls.contains(floorCall)) pendingFloorCalls.add(floorCall);
+            synchronized (MUTEX) {
+                if (!pendingFloorCalls.contains(floorCall)) pendingFloorCalls.add(floorCall);
             }
         } else throw new InvalidParameterException("Invalid floor: " + floorNo);
     }
@@ -39,7 +43,7 @@ public class CallPub{
     public void stop(int elevatorId) {
         for (ElevatorSub elevatorSub : elevatorSubs) {
             if (elevatorId == elevatorSub.getElevatorId()) {
-                elevatorSub.stop();
+                elevatorSub.terminate();
                 break;
             }
         }
@@ -48,36 +52,36 @@ public class CallPub{
     public void gotoFloor(int floorNo, int elevatorId) {
         for (ElevatorSub elevatorSub : elevatorSubs) {
             if (elevatorId == elevatorSub.getElevatorId()) {
-                if (elevatorSub.isUp() && elevatorSub.getCurrentFloor() < floorNo) {
+                if (elevatorSub.isUp() && elevatorSub.getCurrentFloor().getFloorNo() < floorNo) {
                     FloorCall floorCall = new FloorCall(floorNo, true);
                     synchronized (MUTEX) {
                         if (!pendingFloorCalls.contains(floorCall)) pendingFloorCalls.add(floorCall);
                     }
-                }
-                else if (!elevatorSub.isUp() && elevatorSub.getCurrentFloor() > floorNo) {
+                } else if (!elevatorSub.isUp() && elevatorSub.getCurrentFloor().getFloorNo() > floorNo) {
                     FloorCall floorCall = new FloorCall(floorNo, false);
                     synchronized (MUTEX) {
                         if (!pendingFloorCalls.contains(floorCall)) pendingFloorCalls.add(floorCall);
                     }
-                }
-                else throw new InvalidParameterException("Floor cannot be selected: " + floorNo);
+                } else throw new InvalidParameterException("Floor cannot be selected: " + floorNo);
                 break;
             }
         }
     }
 
-    public synchronized FloorCall getUpdate(){
-        if(!pendingFloorCalls.isEmpty())
-            return  pendingFloorCalls.remove();
+    public synchronized FloorCall getUpdate() {
+        synchronized (MUTEX) {
+            if (!pendingFloorCalls.isEmpty())
+                return pendingFloorCalls.remove();
+        }
         return null;
     }
 
-    public int status(int elevatorId) {
-        for(ElevatorSub elevatorSub: elevatorSubs){
-            if(elevatorId == elevatorSub.getElevatorId())
+    public FloorCall status(int elevatorId) {
+        for (ElevatorSub elevatorSub : elevatorSubs) {
+            if (elevatorId == elevatorSub.getElevatorId())
                 return elevatorSub.getCurrentFloor();
         }
 
-        return 0;
+        throw new InvalidParameterException("Invalid elevator id: " + elevatorId);
     }
 }
