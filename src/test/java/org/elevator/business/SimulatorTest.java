@@ -1,32 +1,34 @@
 package org.elevator.business;
 
-import org.elevator.common.Constants;
-import org.elevator.common.FloorCall;
-
 /**
  * Created by Dheeraj Agrawal on 26/04/15.
  */
 public class SimulatorTest {
-    public static void main(String[] args) {
-        Building building = new Building();
-        Elevator elevator1 = new Elevator(1, building);
-        Elevator elevator2 = new Elevator(2, building);
+    public static void main(String[] args) throws InterruptedException {
+        CallPub callPub = new CallPub();
+        ElevatorSub elevatorSub1 = new ElevatorSub(1, callPub);
+        ElevatorSub elevatorSub2 = new ElevatorSub(2, callPub);
+        callPub.register(elevatorSub1);
+        callPub.register(elevatorSub2);
 
-        building.registerElevator(elevator1);
-        building.registerElevator(elevator2);
+        Thread te1 = new Thread(elevatorSub1);
+        Thread te2 = new Thread(elevatorSub2);
+        Thread tCallPub = new Thread(callPub);
 
-        Thread tElevator1 = new Thread(elevator1);
-        Thread tElevator2 = new Thread(elevator2);
 
-        tElevator1.start();
-        tElevator2.start();
+        te1.start();
+        te2.start();
 
-        building.addFloorCall(6, false);
-        building.addFloorCall(1, true);
-        building.addFloorCall(2, true);
-        building.addFloorCall(2, false);
-        building.addFloorCall(3  , false);
+        callPub.up(6);
+        callPub.down(3);
+        callPub.up(4);
+        callPub.up(2);
+        callPub.up(5);
+        callPub.down(6);
+        callPub.up(1);
+        callPub.up(3);
 
+        //tCallPub.start();
 
     }
 }

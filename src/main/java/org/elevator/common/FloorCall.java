@@ -1,28 +1,11 @@
 package org.elevator.common;
 
 /**
- * Created by Dheeraj Agrawal on 26/04/15.
+ * Created by e7006722 on 27/04/2015.
  */
-public class FloorCall implements Comparable{
-    private Integer floor;
-    private Direction direction;
-
-    public FloorCall(Integer floor, Direction direction) {
-        this.floor = floor;
-        this.direction = direction;
-    }
-
-    @Override
-    public String toString() {
-        return "FloorCall{" +
-                "direction=" + direction +
-                ", floor=" + floor +
-                '}';
-    }
-
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
+public class FloorCall {
+    private int floorNo;
+    private boolean up;
 
     @Override
     public boolean equals(Object o) {
@@ -31,35 +14,48 @@ public class FloorCall implements Comparable{
 
         FloorCall floorCall = (FloorCall) o;
 
-        if (floor != null ? !floor.equals(floorCall.floor) : floorCall.floor != null) return false;
-        return direction == floorCall.direction;
+        if (floorNo != floorCall.floorNo) return false;
+        return up == floorCall.up;
 
     }
 
     @Override
     public int hashCode() {
-        int result = floor != null ? floor.hashCode() : 0;
-        result = 31 * result + (direction != null ? direction.hashCode() : 0);
+        int result = floorNo;
+        result = 31 * result + (up ? 1 : 0);
         return result;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public Integer getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Integer floor) {
-        this.floor = floor;
-    }
-
     @Override
-    public int compareTo(Object o) {
-        if(o instanceof FloorCall){
-            return floor.compareTo(((FloorCall)o).getFloor());
-        }
-        return 0;
+    public String toString() {
+        return "FloorCall{" +
+                "floorNo=" + floorNo +
+                ", up=" + up +
+                '}';
+    }
+
+    public int getFloorNo() {
+        return floorNo;
+    }
+
+    public void setFloorNo(int floorNo) {
+        this.floorNo = floorNo;
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public boolean isDown() {
+        return !up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+
+    public FloorCall(int floorNo, boolean up) {
+        this.floorNo = floorNo;
+        this.up = up;
     }
 }
