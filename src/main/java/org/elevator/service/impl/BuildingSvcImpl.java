@@ -1,6 +1,6 @@
 package org.elevator.service.impl;
 
-import org.elevator.business.StartElevators;
+import org.elevator.business.ElevatorPubSingleton;
 import org.elevator.service.BuildingSvc;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class BuildingSvcImpl implements BuildingSvc {
     public void up(int floorNo) {
-        StartElevators.elevatorPub.up(floorNo);
+        ElevatorPubSingleton.elevatorPub.up(floorNo);
     }
 
     public void down(int floorNo) {
-        StartElevators.elevatorPub.down(floorNo);
+        ElevatorPubSingleton.elevatorPub.down(floorNo);
     }
 }

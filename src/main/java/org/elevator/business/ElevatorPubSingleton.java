@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * Created by Dheeraj Agrawal on 27/04/15.
  */
 @Component
-public class StartElevators {
+public class ElevatorPubSingleton {
     public final static ElevatorPub elevatorPub = createElevatorPub();
 
     public static ElevatorPub createElevatorPub() {
